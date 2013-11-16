@@ -66,6 +66,47 @@ public class Start_screen extends Activity {
           out.write(buffer, 0, read);
         }
     }
+	
+	private class recoupProcess extends Thread {
+		Process p2, p3;
+		public void run() {
+            try {
+				p3 = Runtime.getRuntime().exec(new String[]{"ps","|", "grep","ndnld"});
+	            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p3.getInputStream()));
+	            // read the output from the command
+	            String s;
+	            //System.out.println("Here is the standard output of the command:\n");
+	            boolean found = false;
+	            
+	            while ((s = stdInput.readLine()) != null ) {
+	          	  //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+	          	  
+	          	  if (s.contains("/data/data/com.example.ndndroid/ndnld")) {
+	          		  Toast.makeText(getApplicationContext(), "process tested succesfully", Toast.LENGTH_LONG).show(); 
+	          	      found = true;
+	          	      break;
+	          	  }
+	            }
+	            //TODO: Ajith: Add sleep here.
+            	  //Thread.sleep(1000);
+	            //System.out.println(s);
+	            // read any errors from the attempted command
+	            if (found == false) {
+	            	p2 = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/run.sh"});
+	                
+	                BufferedReader stdError = new BufferedReader(new InputStreamReader(p2.getErrorStream()));
+	
+	                stdInput = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+	          	  	while ((s = stdError.readLine()) != null) {
+	          	  		Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();                		  
+	          	  	}
+	            }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,6 +137,15 @@ public class Start_screen extends Activity {
                 out.close();
                 in = mngr.open("ndnldcexe");
                 outFile = new File("/data/data/com.example.ndndroid/", "ndnldc");
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+                in.close();
+                out.flush();
+                out.close();
+                in = null;
+                out = null;
+                in = mngr.open("runsh");
+                outFile = new File("/data/data/com.example.ndndroid/", "run.sh");
                 out = new FileOutputStream(outFile);
                 copyFile(in, out);
                 in.close();
@@ -168,27 +218,27 @@ public class Start_screen extends Activity {
 		startButton.setText("Start NDNLD");
 		startButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
-				Process p, p2, p3;  
-	               try {  
+				Process p, p1, p2, p3;  
+	               try {
+
 	                  // Perform su to get root privileges
-	                  p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnld");
+	                  p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/run.sh");
 	                  p.waitFor();
-	                  
-	                  p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnldc");
-	                  p.waitFor();
-	                 
-	                  p2 = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/ndnld"});
-	                  
+
+	                  p2 = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/run.sh"});
+	                  //p2.waitFor(); // Buggy? Ajith: Check on phone.
 
 	                  BufferedReader stdError = new BufferedReader(new InputStreamReader(p2.getErrorStream()));
                       
 	                  p3 = Runtime.getRuntime().exec(new String[]{"ps","|", "grep","ndnld"});
+	                  //p3.waitFor(); // Buggy? Ajith: Check on phone.
+
 	                  BufferedReader stdInput = new BufferedReader(new InputStreamReader(p3.getInputStream()));
 	                  // read the output from the command
-	                  String s;
 	                  //System.out.println("Here is the standard output of the command:\n");
 	                  boolean found = false;
 	                  
+	                  String s;
 	                  while ((s = stdInput.readLine()) != null ) {
 	                	  //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
 	                	  
@@ -203,12 +253,12 @@ public class Start_screen extends Activity {
 	                  // read any errors from the attempted command
 	                  if (found == false) {
 	                	  stdInput = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+	                	  Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
 	                	  while ((s = stdError.readLine()) != null) {
 		                	  Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();                		  
 	                	  }
 	                  }
 
-	                  
 	                  /*System.out.println("Here is the standard error of the command (if any):\n");
 	                  while ((s = stdError.readLine()) != null) {
 	                	  Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();

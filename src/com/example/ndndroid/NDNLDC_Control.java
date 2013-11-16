@@ -126,7 +126,7 @@ public class NDNLDC_Control extends Activity {
 		createFaceButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				String text=null;
-				Process p, p2, p3;  
+				Process p, p2, p3;
 	               try {  
 	                  // Perform su to get root privileges
 	                  //p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnld");
@@ -134,6 +134,7 @@ public class NDNLDC_Control extends Activity {
 	                  
 	                  //p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnldc");
 	                  //p.waitFor();
+	            	  
 	                  text = mac.getText().toString();
 	                  p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-c", "-p", "ether", "-h" , text , "-i" , "wlan0"});
 	                  
