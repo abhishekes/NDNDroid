@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
@@ -36,7 +37,7 @@ public class NDNLDC_Control extends Activity {
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
-	private static final boolean AUTO_HIDE = true;
+	private static final boolean AUTO_HIDE = false;
 
 	/**
 	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -133,16 +134,11 @@ public class NDNLDC_Control extends Activity {
 							controlsView.setVisibility(visible ? View.VISIBLE
 									: View.GONE);
 						}
-
-						if (visible && AUTO_HIDE) {
-							// Schedule a hide().
-							delayedHide(AUTO_HIDE_DELAY_MILLIS);
-						}
 					}
 				});
 
 		// Set up the user interaction to manually show or hide the system UI.
-		contentView.setOnClickListener(new View.OnClickListener() {
+		/*contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				if (TOGGLE_ON_CLICK) {
@@ -151,7 +147,7 @@ public class NDNLDC_Control extends Activity {
 					mSystemUiHider.show();
 				}
 			}
-		});
+		});*/
 		
 		//Change button text
 		final Button createFaceButton = (Button) findViewById(R.id.button1);
@@ -227,8 +223,21 @@ public class NDNLDC_Control extends Activity {
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(
-				mDelayHideTouchListener);
+		//findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+	}
+	
+	@Override
+	public void onBackPressed() {
+	    new AlertDialog.Builder(this)
+	        .setTitle("Really Exit?")
+	        .setMessage("NDNLD Service will be reset. Are you sure?")
+	        .setNegativeButton(android.R.string.no, null)
+	        .setPositiveButton(android.R.string.yes, new OnClickListener() {
+
+	            public void onClick(DialogInterface arg0, int arg1) {
+	                NDNLDC_Control.super.onBackPressed();
+	            }
+	        }).create().show();
 	}
 
 	@Override
@@ -238,7 +247,7 @@ public class NDNLDC_Control extends Activity {
 		// Trigger the initial hide() shortly after the activity has been
 		// created, to briefly hint to the user that UI controls
 		// are available.
-		delayedHide(100);
+		//delayedHide(100);
 	}
 
 	/**

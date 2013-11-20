@@ -44,7 +44,7 @@ public class Start_screen extends Activity {
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
-	private static final boolean AUTO_HIDE = true;
+	private static final boolean AUTO_HIDE = false;
 	
 	private String ndnStatus;
 
@@ -216,16 +216,11 @@ public class Start_screen extends Activity {
 					controlsView.setVisibility(visible ? View.VISIBLE
 							: View.GONE);
 				}
-
-				if (visible && AUTO_HIDE) {
-					// Schedule a hide().
-					delayedHide(AUTO_HIDE_DELAY_MILLIS);
-				}
 			}
 		});
 
 		// Set up the user interaction to manually show or hide the system UI.
-		contentView.setOnClickListener(new View.OnClickListener() {
+		/*contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				if (TOGGLE_ON_CLICK) {
@@ -234,7 +229,7 @@ public class Start_screen extends Activity {
 					mSystemUiHider.show();
 				}
 			}
-		});
+		});*/
 
 
 		//Change button text
@@ -380,8 +375,7 @@ public class Start_screen extends Activity {
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(
-				mDelayHideTouchListener);
+		//findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 	}
 
 	@Override
@@ -391,7 +385,7 @@ public class Start_screen extends Activity {
 		// Trigger the initial hide() shortly after the activity has been
 		// created, to briefly hint to the user that UI controls
 		// are available.
-		delayedHide(100);
+		//delayedHide(100);
 	}
 
 	/**
