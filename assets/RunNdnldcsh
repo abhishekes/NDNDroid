@@ -1,0 +1,6 @@
+#!/system/bin/sh
+list="$(find /data/app-lib -name "*libcontroller.so*" | grep ndn)"
+list="${list%libcontroller.so}"
+env_ld_lib="$(echo $LD_LIBRARY_PATH)"
+final="$env_ld_lib:$list"
+export LD_LIBRARY_PATH=$final
