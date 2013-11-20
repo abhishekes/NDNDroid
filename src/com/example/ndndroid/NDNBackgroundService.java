@@ -40,9 +40,21 @@ public class NDNBackgroundService extends Service{
 		Process p, p2, p3;
            try {  
 
-        	  
-              p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-c", "-p", "ether", "-h" , text , "-i" , "wlan0"});
-              p.waitFor();
+   			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
+   			p.waitFor();
+   			
+   			p = Runtime.getRuntime().exec(new String[]{"su", "-c","cp","/data/data/com.example.ndndroid/RunNdnldc.sh","/data/data/com.example.ndndroid/temp.sh"});
+   			p.waitFor();
+
+   			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/temp.sh");
+   			p.waitFor();
+
+   			String ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + text + " -i wlan0 &> /cache/command_output.txt");
+ 			p = Runtime.getRuntime().exec(new String[]{"su", "-c","echo", ndnldc, ">>", "/data/data/com.example.ndndroid/temp.sh"});
+   			p.waitFor();
+
+   			p = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/temp.sh"});
+	   	    p.waitFor();
 
               BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
               
