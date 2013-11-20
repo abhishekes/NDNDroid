@@ -37,9 +37,8 @@ public class NDNBackgroundService extends Service{
 
 	}
     public String createNewInterface(String mac, String prefix) {
-    	String text=null;
-    	String s = new String(" ");
-		Process p, p2, p3;
+    	String text=null,s = null;
+		Process p;
            try {  
 
    			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
@@ -57,38 +56,29 @@ public class NDNBackgroundService extends Service{
 
    			p = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/temp.sh"});
 	   	    p.waitFor();
+	   	    
 
-              BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-              
-              BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-              // read the output from the command
-              
-              String error = new String();
-              System.out.println("Here is the standard output of the command:\n");
-             // boolean found = false;
-              while ((s = stdError.readLine()) != null ) {
-            	  //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
-            	  
-            	  //if (s.contains("/data/data/com.example.ndndroid/ndnld")) {
-            		  error.concat(s);
-            	      //Toast.makeText(getApplicationContext(), "Error : " + s, Toast.LENGTH_LONG).show(); 
-            	      //found = true;
-            	      //break;
-            	  //}
-            	  
-              }
-              
-              s = stdInput.readLine();
-         	  
-              Integer faceNum = Integer.parseInt(s);
-              p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-r", "-f", faceNum.toString(), "-n", prefix});
-              stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));    
-              s = stdInput.readLine();
-              //Toast.makeText(getApplicationContext(), "Result " + s, Toast.LENGTH_LONG).show();
-              
-              
-             
-           } catch (IOException e) {  
+            s = checkCommandOutput(); 
+
+	   	    Integer faceNum = Integer.parseInt(s);
+   			p = Runtime.getRuntime().exec(new String[]{"su", "-c","cp","/data/data/com.example.ndndroid/RunNdnldc.sh","/data/data/com.example.ndndroid/temp.sh"});
+   			p.waitFor();
+
+   			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/temp.sh");
+   			p.waitFor();
+   			ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -r -f " + faceNum.toString() + " -n " + prefix + " &> /cache/command_output.txt");
+
+   			p = Runtime.getRuntime().exec(new String[]{"su", "-c","echo", ndnldc, ">>", "/data/data/com.example.ndndroid/temp.sh"});
+   			p.waitFor();
+
+   			p = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/temp.sh"});
+	   	    p.waitFor();
+   			
+            s = checkCommandOutput(); 
+
+           } catch (NumberFormatException e) {
+        	   return s;
+           } catch (IOException e) {
               // TODO Code to run in input/output exception  
            } catch (InterruptedException e) {
 			// TODO Auto-generated catch block

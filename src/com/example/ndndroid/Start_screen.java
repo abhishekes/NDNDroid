@@ -175,6 +175,15 @@ public class Start_screen extends Activity {
 			out.close();
 			in = null;
 			out = null;
+			in = mngr.open("RunNdnldcsh");
+			outFile = new File("/data/data/com.example.ndndroid/", "RunNdnldc.sh");
+			out = new FileOutputStream(outFile);
+			copyFile(in, out);
+			in.close();
+			out.flush();
+			out.close();
+			in = null;
+			out = null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
