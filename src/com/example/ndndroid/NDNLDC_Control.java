@@ -149,6 +149,18 @@ public class NDNLDC_Control extends Activity {
 			}
 		});*/
 		
+		final Button resetButton = (Button) findViewById(R.id.dummy_button);
+		resetButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				try {
+					api.resetServices();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}	
+		});
+		
 		//Change button text
 		final Button createFaceButton = (Button) findViewById(R.id.button1);
 		final EditText mac = (EditText) findViewById(R.id.editText2);
