@@ -1,6 +1,8 @@
 package com.example.ndndroid;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -9,7 +11,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
+
 
 public class NDNBackgroundService extends Service{
 
@@ -77,9 +79,7 @@ public class NDNBackgroundService extends Service{
               }
               
               s = stdInput.readLine();
-              
-              
-            	  
+         	  
               Integer faceNum = Integer.parseInt(s);
               p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-r", "-f", faceNum.toString(), "-n", prefix});
               stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));    
@@ -96,7 +96,29 @@ public class NDNBackgroundService extends Service{
 		}
            return s;
     }
-	public boolean checkNDNStatus() {
+	
+    public String checkCommandOutput() {
+    	String output = new String();
+    	BufferedReader br;
+    	try {
+			br = new BufferedReader(new FileReader("/cache/command_output.txt"));
+			
+			String line;
+			while ((line = br.readLine()) != null) {
+				output.concat(line + "\n");
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+              
+			return null;
+		} catch (IOException e) {
+			
+			return output;
+		}
+    	return output;
+    }
+    
+    public boolean checkNDNStatus() {
 		Process p = null;
 		String s;
 		boolean found = false;
@@ -182,8 +204,6 @@ public class NDNBackgroundService extends Service{
 			return createNewInterface(mac, prefix);
 
 		}
-
-
 
 	};
 	
