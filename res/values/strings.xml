@@ -6,5 +6,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="title_activity_ndnldc__control">NDNLDC_Control</string>
+    <string name="reset_button">Reset Services</string>
+    <string name="ndnldc_control">NDNLDC CONTROL</string>
 
 </resources>

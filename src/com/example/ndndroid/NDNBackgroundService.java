@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import android.app.Service;
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.util.Log;
 public class NDNBackgroundService extends Service{
 
 	private static final String TAG = NDNBackgroundService.class.getSimpleName();
+	private ArrayList<FaceInfo> faceTable = new ArrayList<FaceInfo>();
+	Object Lock = new Object();
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -36,6 +39,7 @@ public class NDNBackgroundService extends Service{
 		Log.i(TAG, "Destroying NDN Background Service");
 
 	}
+
     public String createNewInterface(String mac, String prefix) {
     	String text=null,s = null;
 		Process p;
@@ -84,31 +88,31 @@ public class NDNBackgroundService extends Service{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-           return s;
-    }
-	
-    public String checkCommandOutput() {
-    	String output = new String();
-    	BufferedReader br;
-    	try {
+		return s;
+	}
+
+	public String checkCommandOutput() {
+		String output = new String();
+		BufferedReader br;
+		try {
 			br = new BufferedReader(new FileReader("/cache/command_output.txt"));
-			
+
 			String line;
 			while ((line = br.readLine()) != null) {
 				output.concat(line + "\n");
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
-              
+
 			return null;
 		} catch (IOException e) {
-			
+
 			return output;
 		}
-    	return output;
-    }
-    
-    public boolean checkNDNStatus() {
+		return output;
+	}
+
+	public boolean checkNDNStatus() {
 		Process p = null;
 		String s;
 		boolean found = false;
@@ -140,12 +144,12 @@ public class NDNBackgroundService extends Service{
 		return found;
 
 	}
-	public String startNDN() {
+	public String startNDN(boolean checkCurrentStatus) {
 		Process p, p2;  
 		String error = null;
 		try {
 
-			if (checkNDNStatus()) {
+			if (checkNDNStatus() && checkCurrentStatus) {
 				return null;
 			}
 
@@ -186,17 +190,58 @@ public class NDNBackgroundService extends Service{
 
 		@Override
 		public String startNDNBackgroundService() throws RemoteException {
-			return startNDN(); 
+			return startNDN(true); 
 
 		}
-		
-		public String addNewConnection(String mac, String prefix) throws RemoteException {
-			return createNewInterface(mac, prefix);
 
+		public String addNewConnection(String mac, String prefix) throws RemoteException {
+			String result = null;
+			result = createNewInterface(mac, prefix);
+			if (result == null) {
+				synchronized(Lock) {
+					addFace(mac, prefix);
+				}
+
+				return null;
+			}
+			else {
+				return result;
+			}
+
+		}
+
+
+		public boolean resetServices() {
+			return resetNDNService();
+		}
+
+		@Override
+		public void stopServices() throws RemoteException {
+			
+			startNDN(false);
+			faceTable = new ArrayList<FaceInfo>();
+		
 		}
 
 	};
 	
-	
+	private void addFace(String mac, String prefix) {
+		faceTable.add(new FaceInfo(mac, prefix));
+		
+	}
+
+	private boolean resetNDNService() {
+		boolean ret = true;
+		
+		startNDN(false);
+		synchronized(Lock) {
+			for (FaceInfo temp : faceTable) {
+                if (createNewInterface(temp.mac, temp.prefix) != null) {
+                	ret = false;
+                }
+			}
+		}
+		return ret;
+	}
 
 }
