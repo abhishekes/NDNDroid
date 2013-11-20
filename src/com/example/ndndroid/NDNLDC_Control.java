@@ -236,6 +236,12 @@ public class NDNLDC_Control extends Activity {
 
 	            public void onClick(DialogInterface arg0, int arg1) {
 	                NDNLDC_Control.super.onBackPressed();
+	                try {
+						api.stopServices();
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	            }
 	        }).create().show();
 	}

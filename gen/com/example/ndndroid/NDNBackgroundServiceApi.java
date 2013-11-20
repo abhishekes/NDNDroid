@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/abhishek/workspace/NDNDroid/aidl/com/example/ndndroid/NDNBackgroundServiceApi.aidl
+ * Original file: /home/skulkrn2/git/NDNDroid/aidl/com/example/ndndroid/NDNBackgroundServiceApi.aidl
  */
 package com.example.ndndroid;
 public interface NDNBackgroundServiceApi extends android.os.IInterface
@@ -68,6 +68,13 @@ data.enforceInterface(DESCRIPTOR);
 boolean _result = this.resetServices();
 reply.writeNoException();
 reply.writeInt(((_result)?(1):(0)));
+return true;
+}
+case TRANSACTION_stopServices:
+{
+data.enforceInterface(DESCRIPTOR);
+this.stopServices();
+reply.writeNoException();
 return true;
 }
 }
@@ -141,12 +148,28 @@ _data.recycle();
 }
 return _result;
 }
+@Override public void stopServices() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_stopServices, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
 }
 static final int TRANSACTION_startNDNBackgroundService = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_addNewConnection = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
 static final int TRANSACTION_resetServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_stopServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
 }
 public java.lang.String startNDNBackgroundService() throws android.os.RemoteException;
 public java.lang.String addNewConnection(java.lang.String mac, java.lang.String prefix) throws android.os.RemoteException;
 public boolean resetServices() throws android.os.RemoteException;
+public void stopServices() throws android.os.RemoteException;
 }

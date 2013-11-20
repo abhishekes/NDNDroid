@@ -212,6 +212,14 @@ public class NDNBackgroundService extends Service{
 			return resetNDNService();
 		}
 
+		@Override
+		public void stopServices() throws RemoteException {
+			
+			startNDN(false);
+			faceTable = new ArrayList<FaceInfo>();
+		
+		}
+
 	};
 	
 	private void addFace(String mac, String prefix) {
