@@ -8,10 +8,17 @@ import com.example.ndndroid.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -52,11 +59,38 @@ public class NDNLDC_Control extends Activity {
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
+	
+	private static final String TAG = NDNBackgroundService.class.getSimpleName();
+	private NDNBackgroundServiceApi api;
+	private boolean rpcStatus = false;
+	
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			Log.i(TAG, "NDNLDC Service connection established");
+            rpcStatus = true;
+
+			api = NDNBackgroundServiceApi.Stub.asInterface(service);
+			
+
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		rpcStatus = false;
+		
+		Intent intent = new Intent(NDNBackgroundService.class.getName());
+		bindService(intent, serviceConnection, 0);
+		
 		setContentView(R.layout.activity_ndnldc__control);
 
 		final View controlsView = findViewById(R.id.fullscreen_content_controls);
@@ -125,7 +159,16 @@ public class NDNLDC_Control extends Activity {
 		final EditText prefix = (EditText) findViewById(R.id.editText1);
 		createFaceButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
-				String text=null;
+				while (!rpcStatus);
+				try {
+					String macText = mac.getText().toString();
+					String prefixText = prefix.getText().toString();
+					api.addNewConnection(macText, prefixText );
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				/*String text=null;
 				Process p, p2, p3;
 	               try {  
 	                  // Perform su to get root privileges
@@ -177,7 +220,7 @@ public class NDNLDC_Control extends Activity {
 	                 
 	               } catch (IOException e) {  
 	                  // TODO Code to run in input/output exception  
-	               }
+	               }*/
 	        }
 		});
 

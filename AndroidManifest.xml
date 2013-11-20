@@ -36,6 +36,14 @@
             android:label="@string/title_activity_ndnldc__control"
             android:theme="@style/FullscreenTheme" >
         </activity>
+        <service
+          android:name=".NDNBackgroundService"
+          android:process=":remote">
+          <intent-filter>
+            <action
+              android:name="com.example.ndndroid.NDNBackgroundService" />
+          </intent-filter>
+       </service>
     </application>
 
 </manifest>
