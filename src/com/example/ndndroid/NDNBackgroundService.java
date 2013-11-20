@@ -95,7 +95,7 @@ public class NDNBackgroundService extends Service{
 			
 			String line;
 			while ((line = br.readLine()) != null) {
-				output.concat(line);
+				output.concat(line + "\n");
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
