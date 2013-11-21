@@ -4,3 +4,5 @@ list="${list%libcontroller.so}"
 env_ld_lib="$(echo $LD_LIBRARY_PATH)"
 final="$env_ld_lib:$list"
 export LD_LIBRARY_PATH=$final
+/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnldc
+

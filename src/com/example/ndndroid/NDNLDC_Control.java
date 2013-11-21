@@ -3,6 +3,8 @@ package com.example.ndndroid;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -181,7 +183,7 @@ public class NDNLDC_Control extends Activity {
 				}
 				String text=null;
 				Process p, p2, p3;
-	               try {  
+/*	               try {  
 	                  // Perform su to get root privileges
 	                  //p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnld");
 	                  //p.waitFor();
@@ -189,18 +191,10 @@ public class NDNLDC_Control extends Activity {
 	                  //p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/ndnldc");
 	                  //p.waitFor();
 	            	  
-	                  text = mac.getText().toString();
+//	                  text = mac.getText().toString();
 //	                  p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-c", "-p", "ether", "-h" , text , "-i" , "wlan0"});
 	                  
-	                  File outputDir = getApplicationContext().getCacheDir();
-	                  File outPutFile = File.createTempFile("RunNdnldc", "sh", outputDir);
-	                  
-	                  BufferedWriter bw = new BufferedWriter(new FileWriter(outPutFile));
-	                  bw.write("This is crazy");
-	                  bw.flush();
-	                  bw.close();
-
-/*	                  BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	                  BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
                       
 	                  //p3 = Runtime.getRuntime().exec(new String[]{"ps","|", "grep","ndnld"});
 	                  BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -235,10 +229,10 @@ public class NDNLDC_Control extends Activity {
 	                  Toast.makeText(getApplicationContext(), "Result " + s, Toast.LENGTH_LONG).show();
 	                  
 	                  
-*/	                 
 	               } catch (IOException e) {  
 	                  // TODO Code to run in input/output exception  
-	               }
+				}
+*/	                 
 	        }
 		});
 
@@ -267,6 +261,7 @@ public class NDNLDC_Control extends Activity {
 	            }
 	        }).create().show();
 	}
+
 
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {

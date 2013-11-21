@@ -1,8 +1,11 @@
 package com.example.ndndroid;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -41,45 +44,48 @@ public class NDNBackgroundService extends Service{
 	}
 
     public String createNewInterface(String mac, String prefix) {
-    	String text=null,s = null;
+    	String s = null;
 		Process p;
-           /*try {  
+           try {  
 
-   			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
-   			p.waitFor();
-   			
-   			p = Runtime.getRuntime().exec(new String[]{"su", "-c","cp","/data/data/com.example.ndndroid/RunNdnldc.sh","/data/data/com.example.ndndroid/temp.sh"});
-   			p.waitFor();
+        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
+        	   p.waitFor();
+        	   String ndnldcsh = new String(readFile("/data/data/com.example.ndndroid/RunNdnldc.sh"));
+        	   File outputDir = getApplicationContext().getCacheDir();
+        	   File outPutFile = File.createTempFile("RunNdnldc", "sh", outputDir);
+        	   BufferedWriter bw = new BufferedWriter(new FileWriter(outPutFile));
+        	   String ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + mac + " -i wlan0 &> /cache/command_output1.txt");
+        	   String ndnldcConnect = ndnldcsh + "\n" + ndnldc;
 
-   			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/temp.sh");
-   			p.waitFor();
+        	   ndnldc = new String("echo \"/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + mac + " -i wlan0\" > /cache/command_output.txt");
+        	   ndnldcConnect += "\n" + ndnldc;
 
-   			String ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + text + " -i wlan0 &> /cache/command_output.txt");
- 			p = Runtime.getRuntime().exec(new String[]{"su", "-c","echo", ndnldc, ">>", "/data/data/com.example.ndndroid/temp.sh"});
-   			p.waitFor();
+        	   bw.write(ndnldcConnect);
+        	   bw.flush();
+        	   bw.close(); 
+        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 " + outPutFile.getAbsolutePath());
+        	   p.waitFor();
 
-   			p = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/temp.sh"});
-	   	    p.waitFor();
+        	   p = Runtime.getRuntime().exec(new String[]{"su","-c", outPutFile.getAbsolutePath()});
+        	   p.waitFor();
 	   	    
 
-            s = checkCommandOutput(); 
+        	   s = readFile("/cache/command_output1.txt");
+        	   Integer faceNum = Integer.parseInt(s);
+        	   ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -r -f " + faceNum + " -n " + prefix + " &> /cache/command_output2.txt");
+        	   String ndnldcRegister = ndnldcsh + "\n" + ndnldc;
 
-	   	    Integer faceNum = Integer.parseInt(s);
-   			p = Runtime.getRuntime().exec(new String[]{"su", "-c","cp","/data/data/com.example.ndndroid/RunNdnldc.sh","/data/data/com.example.ndndroid/temp.sh"});
-   			p.waitFor();
+        	   File outPutFile1 = File.createTempFile("RunNdnldc", "sh", outputDir);
+        	   bw = new BufferedWriter(new FileWriter(outPutFile1));
+        	   bw.write(ndnldcRegister);
+        	   bw.flush();
+        	   bw.close(); 
+        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 " + outPutFile1.getAbsolutePath());
+        	   p.waitFor();
 
-   			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/temp.sh");
-   			p.waitFor();
-   			ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -r -f " + faceNum.toString() + " -n " + prefix + " &> /cache/command_output.txt");
-
-   			p = Runtime.getRuntime().exec(new String[]{"su", "-c","echo", ndnldc, ">>", "/data/data/com.example.ndndroid/temp.sh"});
-   			p.waitFor();
-
-   			p = Runtime.getRuntime().exec(new String[]{"su","-c", "/data/data/com.example.ndndroid/temp.sh"});
-	   	    p.waitFor();
-   			
-            s = checkCommandOutput(); 
-
+        	   p = Runtime.getRuntime().exec(new String[]{"su","-c", outPutFile1.getAbsolutePath()});
+        	   p.waitFor();
+        	   s = readFile("/cache/command_output2.txt");
            } catch (NumberFormatException e) {
         	   return s;
            } catch (IOException e) {
@@ -87,8 +93,29 @@ public class NDNBackgroundService extends Service{
            } catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		return s;
+	}
+
+    public String readFile(String path) {
+		String output = new String();
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(path));
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				output += line + "\n";
+			}
+			br.close();
+		} catch (FileNotFoundException e) {
+
+			return null;
+		} catch (IOException e) {
+
+			return output;
+		}
+		return output;
 	}
 
 	public String checkCommandOutput() {
@@ -99,7 +126,7 @@ public class NDNBackgroundService extends Service{
 
 			String line;
 			while ((line = br.readLine()) != null) {
-				output.concat(line + "\n");
+				output += line + "\n";
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
