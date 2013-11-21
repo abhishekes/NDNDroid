@@ -1,6 +1,9 @@
 package com.example.ndndroid;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -164,7 +167,7 @@ public class NDNLDC_Control extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				/*String text=null;
+				String text=null;
 				Process p, p2, p3;
 	               try {  
 	                  // Perform su to get root privileges
@@ -175,10 +178,17 @@ public class NDNLDC_Control extends Activity {
 	                  //p.waitFor();
 	            	  
 	                  text = mac.getText().toString();
-	                  p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-c", "-p", "ether", "-h" , text , "-i" , "wlan0"});
+//	                  p = Runtime.getRuntime().exec(new String[]{"/data/data/com.example.ndndroid/ndnldc", "-c", "-p", "ether", "-h" , text , "-i" , "wlan0"});
 	                  
+	                  File outputDir = getApplicationContext().getCacheDir();
+	                  File outPutFile = File.createTempFile("RunNdnldc", "sh", outputDir);
+	                  
+	                  BufferedWriter bw = new BufferedWriter(new FileWriter(outPutFile));
+	                  bw.write("This is crazy");
+	                  bw.flush();
+	                  bw.close();
 
-	                  BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+/*	                  BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
                       
 	                  //p3 = Runtime.getRuntime().exec(new String[]{"ps","|", "grep","ndnld"});
 	                  BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -213,10 +223,10 @@ public class NDNLDC_Control extends Activity {
 	                  Toast.makeText(getApplicationContext(), "Result " + s, Toast.LENGTH_LONG).show();
 	                  
 	                  
-	                 
+*/	                 
 	               } catch (IOException e) {  
 	                  // TODO Code to run in input/output exception  
-	               }*/
+	               }
 	        }
 		});
 

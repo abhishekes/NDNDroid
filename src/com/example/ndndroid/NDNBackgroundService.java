@@ -43,7 +43,7 @@ public class NDNBackgroundService extends Service{
     public String createNewInterface(String mac, String prefix) {
     	String text=null,s = null;
 		Process p;
-           try {  
+           /*try {  
 
    			p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
    			p.waitFor();
@@ -87,7 +87,7 @@ public class NDNBackgroundService extends Service{
            } catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		return s;
 	}
 
