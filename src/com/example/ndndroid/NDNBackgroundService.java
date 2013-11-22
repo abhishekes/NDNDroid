@@ -55,7 +55,9 @@ public class NDNBackgroundService extends Service{
         	   File outPutFile = File.createTempFile("RunNdnldc", "sh", outputDir);
         	   BufferedWriter bw = new BufferedWriter(new FileWriter(outPutFile));
         	   String ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + mac + " -i wlan0 &> /cache/command_output1.txt");
-        	   String ndnldcConnect = ndnldcsh + "\n" + ndnldc;
+        	   String commandChmod = ndnldc + "\n" + "/system/bin/chmod 777 /cache/command_output1.txt";
+        	   String ndnldcConnect = new String(ndnldcsh + "\n" + commandChmod);
+        	   
 
         	   ndnldc = new String("echo \"/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + mac + " -i wlan0\" > /cache/command_output.txt");
         	   ndnldcConnect += "\n" + ndnldc;
@@ -68,12 +70,14 @@ public class NDNBackgroundService extends Service{
 
         	   p = Runtime.getRuntime().exec(new String[]{"su","-c", outPutFile.getAbsolutePath()});
         	   p.waitFor();
+        	   
 	   	    
 
         	   s = readFile("/cache/command_output1.txt");
-        	   Integer faceNum = Integer.parseInt(s);
+        	   Integer faceNum = Integer.parseInt((s.split("\n"))[0]);
         	   ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -r -f " + faceNum + " -n " + prefix + " &> /cache/command_output2.txt");
-        	   String ndnldcRegister = ndnldcsh + "\n" + ndnldc;
+        	   commandChmod = ndnldc + "\n" + "/system/bin/chmod 777 /cache/command_output2.txt";
+        	   String ndnldcRegister = ndnldcsh + "\n" + commandChmod;
 
         	   File outPutFile1 = File.createTempFile("RunNdnldc", "sh", outputDir);
         	   bw = new BufferedWriter(new FileWriter(outPutFile1));
@@ -104,8 +108,13 @@ public class NDNBackgroundService extends Service{
 			br = new BufferedReader(new FileReader(path));
 
 			String line;
+			//int loop_ctr = 0;
 			while ((line = br.readLine()) != null) {
-				output += line + "\n";
+				output += line;
+				//if (loop_ctr > 0) {
+					output += "\n";
+				//}
+				//loop_ctr++;
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
