@@ -233,7 +233,7 @@ public class NDNBackgroundService extends Service{
 		public String addNewConnection(String mac, String prefix) throws RemoteException {
 			String result = null;
 			result = createNewInterface(mac, prefix);
-			if (result == null) {
+			if (result == "") {
 				synchronized(Lock) {
 					addFace(mac, prefix);
 				}
