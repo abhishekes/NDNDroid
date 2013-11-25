@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
@@ -23,6 +25,16 @@ public class NDNBackgroundService extends Service{
 	private ArrayList<FaceInfo> faceTable = new ArrayList<FaceInfo>();
 	Object Lock = new Object();
 
+	private Timer timer;
+
+	private TimerTask updateTask = new TimerTask() {
+		@Override
+		public void run() {
+			Log.i(TAG, "Timer task doing work");
+			periodicUpdate();
+		}
+	};
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 
@@ -32,8 +44,11 @@ public class NDNBackgroundService extends Service{
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.i(TAG, "Creating NDN Background Service");
 
+		//Start Timer
+	    timer = new Timer("RecoupNDNLD");
+	    timer.schedule(updateTask, 1000L, 10 * 1000L);
+		Log.i(TAG, "Creating NDN Background Service");
 	}
 
 	@Override
@@ -147,7 +162,13 @@ public class NDNBackgroundService extends Service{
 		}
 		return output;
 	}
-
+	
+	public void periodicUpdate() {
+		if (!checkNDNStatus()) {
+			resetNDNService();
+		}
+	}
+	
 	public boolean checkNDNStatus() {
 		Process p = null;
 		String s;
@@ -255,7 +276,9 @@ public class NDNBackgroundService extends Service{
 		public void stopServices() throws RemoteException {
 			
 			startNDN(false);
-			faceTable = new ArrayList<FaceInfo>();
+			synchronized (Lock) {
+				faceTable = new ArrayList<FaceInfo>();
+			}
 		
 		}
 
