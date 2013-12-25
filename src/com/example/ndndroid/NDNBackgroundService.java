@@ -60,59 +60,16 @@ public class NDNBackgroundService extends Service{
 
     public String createNewInterface(String mac, String prefix) {
     	String s = null;
-		Process p;
-           try {  
-
-        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
-        	   p.waitFor();
-        	   String ndnldcsh = new String(readFile("/data/data/com.example.ndndroid/RunNdnldc.sh"));
-        	   File outputDir = getApplicationContext().getCacheDir();
-        	   File outPutFile = File.createTempFile("RunNdnldc", "sh", outputDir);
-        	   BufferedWriter bw = new BufferedWriter(new FileWriter(outPutFile));
-        	   String ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + mac + " -i wlan0 &> /cache/command_output1.txt");
-        	   String commandChmod = ndnldc + "\n" + "/system/bin/chmod 777 /cache/command_output1.txt";
-        	   String ndnldcConnect = new String(ndnldcsh + "\n" + commandChmod);
-        	   
-
-        	   ndnldc = new String("echo \"/data/data/com.example.ndndroid/ndnldc -c -p ether -h " + mac + " -i wlan0\" > /cache/command_output.txt");
-        	   ndnldcConnect += "\n" + ndnldc;
-
-        	   bw.write(ndnldcConnect);
-        	   bw.flush();
-        	   bw.close(); 
-        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 " + outPutFile.getAbsolutePath());
-        	   p.waitFor();
-
-        	   p = Runtime.getRuntime().exec(new String[]{"su","-c", outPutFile.getAbsolutePath()});
-        	   p.waitFor();
-        	   
-	   	    
-
-        	   s = readFile("/cache/command_output1.txt");
-        	   Integer faceNum = Integer.parseInt((s.split("\n"))[0]);
-        	   ndnldc = new String("/data/data/com.example.ndndroid/ndnldc -r -f " + faceNum + " -n " + prefix + " &> /cache/command_output2.txt");
-        	   commandChmod = ndnldc + "\n" + "/system/bin/chmod 777 /cache/command_output2.txt";
-        	   String ndnldcRegister = ndnldcsh + "\n" + commandChmod;
-
-        	   File outPutFile1 = File.createTempFile("RunNdnldc", "sh", outputDir);
-        	   bw = new BufferedWriter(new FileWriter(outPutFile1));
-        	   bw.write(ndnldcRegister);
-        	   bw.flush();
-        	   bw.close(); 
-        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 " + outPutFile1.getAbsolutePath());
-        	   p.waitFor();
-
-        	   p = Runtime.getRuntime().exec(new String[]{"su","-c", outPutFile1.getAbsolutePath()});
-        	   p.waitFor();
-        	   s = readFile("/cache/command_output2.txt");
-           } catch (NumberFormatException e) {
-        	   return s;
-           } catch (IOException e) {
-              // TODO Code to run in input/output exception  
-           } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    	Integer faceNum = 0;
+		String command = "-c -p ether -h " + mac + " -i wlan0";
+		s = runArbitraryCommand(command);
+		try {
+			faceNum = Integer.parseInt((s.split("\n"))[0]);
+		} catch (NumberFormatException e) {
+			return s;
 		}
+		command = "-r -f " + faceNum + " -n " + prefix;
+		s = runArbitraryCommand(command);
 		return s;
 	}
 
@@ -169,7 +126,42 @@ public class NDNBackgroundService extends Service{
 		}
 	}
 	
-	public boolean checkNDNStatus() {
+    public String runArbitraryCommand(String command) {
+    	String s = null;
+		Process p;
+           try {  
+
+        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 /data/data/com.example.ndndroid/RunNdnldc.sh");
+        	   p.waitFor();
+        	   String ndnldcsh = new String(readFile("/data/data/com.example.ndndroid/RunNdnldc.sh"));
+        	   File outputDir = getApplicationContext().getCacheDir();
+        	   File outPutFile = File.createTempFile("RunNdnldc", "sh", outputDir);
+        	   BufferedWriter bw = new BufferedWriter(new FileWriter(outPutFile));
+        	   String ndnldc = new String("/data/data/com.example.ndndroid/ndnldc " + command + " &> /cache/command_output1.txt");
+        	   String commandChmod = ndnldc + "\n" + "/system/bin/chmod 777 /cache/command_output1.txt";
+        	   String ndnldcConnect = new String(ndnldcsh + "\n" + commandChmod);
+        	   
+        	   bw.write(ndnldcConnect);
+        	   bw.flush();
+        	   bw.close(); 
+        	   p = Runtime.getRuntime().exec("/system/bin/chmod 777 " + outPutFile.getAbsolutePath());
+        	   p.waitFor();
+
+        	   p = Runtime.getRuntime().exec(new String[]{"su","-c", outPutFile.getAbsolutePath()});
+        	   p.waitFor();
+        	   s = readFile("/cache/command_output1.txt");
+           } catch (NumberFormatException e) {
+        	   return s;
+           } catch (IOException e) {
+              // TODO Code to run in input/output exception  
+           } catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return s;
+    }
+
+    public boolean checkNDNStatus() {
 		Process p = null;
 		String s;
 		boolean found = false;
@@ -267,7 +259,15 @@ public class NDNBackgroundService extends Service{
 
 		}
 
-
+		public String runNdnldcCommand(String command) throws RemoteException {
+			String result = null;
+			result = runArbitraryCommand(command);
+			if (result == "") {
+				return null;
+			}
+			return result;
+		}
+		
 		public boolean resetServices() {
 			return resetNDNService();
 		}
