@@ -62,6 +62,16 @@ reply.writeNoException();
 reply.writeString(_result);
 return true;
 }
+case TRANSACTION_runNdnldcCommand:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _arg0;
+_arg0 = data.readString();
+java.lang.String _result = this.runNdnldcCommand(_arg0);
+reply.writeNoException();
+reply.writeString(_result);
+return true;
+}
 case TRANSACTION_resetServices:
 {
 data.enforceInterface(DESCRIPTOR);
@@ -131,6 +141,24 @@ _data.recycle();
 }
 return _result;
 }
+@Override public java.lang.String runNdnldcCommand(java.lang.String command) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+java.lang.String _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(command);
+mRemote.transact(Stub.TRANSACTION_runNdnldcCommand, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readString();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 @Override public boolean resetServices() throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -165,11 +193,13 @@ _data.recycle();
 }
 static final int TRANSACTION_startNDNBackgroundService = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_addNewConnection = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
-static final int TRANSACTION_resetServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
-static final int TRANSACTION_stopServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_runNdnldcCommand = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_resetServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_stopServices = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
 }
 public java.lang.String startNDNBackgroundService() throws android.os.RemoteException;
 public java.lang.String addNewConnection(java.lang.String mac, java.lang.String prefix) throws android.os.RemoteException;
+public java.lang.String runNdnldcCommand(java.lang.String command) throws android.os.RemoteException;
 public boolean resetServices() throws android.os.RemoteException;
 public void stopServices() throws android.os.RemoteException;
 }
